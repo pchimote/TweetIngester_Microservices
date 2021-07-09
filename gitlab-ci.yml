@@ -1,0 +1,256 @@
+image: docker:latest
+
+
+services:
+    - name: docker:18.09.7-dind
+
+
+variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERT_DIR: ""
+
+
+stages:
+    - build
+    - test
+
+# Building jobs.
+
+build:warc-json:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building warc-json..."
+        - docker build -t warc-json:latest services/warc-json/
+
+
+build:id:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building id..."
+        - docker build -t id:latest services/id/
+
+
+build:username:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building username..."
+        - docker build -t username:latest services/username/
+
+
+build:timestamp:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building timestamp..."
+        - docker build -t timestamp:latest services/timestamp/
+
+
+build:hashtags:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building hashtags..."
+        - docker build -t hashtags:latest services/hashtags/
+
+
+build:mentions:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building mentions..."
+        - docker build -t mentions:latest services/mentions/
+
+
+build:geolocation:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building geolocation..."
+        - docker build -t geolocation:latest services/geolocation/
+
+
+build:keywords:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building keywords..."
+        - docker build -t keywords:latest services/keywords/
+
+build:unique-users:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building unique-users..."
+        - docker build -t unique-users:latest services/unique-users/
+
+
+build:twirole:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building twirole..."
+        - docker build -t twirole:latest services/twirole/
+
+
+build:filter-merge:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building filter-merge..."
+        - docker build -t filter-merge:latest services/filter-merge/
+
+
+build:els-index:
+    stage: build
+    tags:
+        - docker
+    script:
+        - echo "Building els-index..."
+        - docker build -t els-index:latest services/els-index/
+
+
+# Testing jobs.
+
+test:warc-json:
+    stage: test
+    dependencies:
+        - build:warc-json
+    image: python:3.8-slim
+    script:
+        - echo "Testing warc-json..."
+        - cd services/warc-json
+        - pip install -r requirements.txt
+        - pip install pytest
+        - pytest test_warc_json.py
+
+
+# test:id:
+#     stage: test
+#     dependencies:
+#         - build:id
+#     image: python:3.8-slim
+#     script:
+#         - echo "Testing id..."
+#         - cd services/id
+#         - pip install -r requirements.txt
+#         - pip install pytest
+#         - pytest test_id.py
+
+
+test:username:
+    stage: test
+    dependencies:
+        - build:username
+    image: python:3.8-slim
+    script:
+        - echo "Testing username..."
+        - cd services/username
+        - pip install -r requirements.txt
+        - pip install pytest
+        - pytest test_extract_username.py
+
+
+test:timestamp:
+    stage: test
+    dependencies:
+        - build:timestamp
+    image: python:3.8-slim
+    script:
+        - echo "Testing timestamp..."
+        - cd services/timestamp
+        - pip install -r requirements.txt
+        - pip install pytest
+        - pytest test_extract_timestamp.py
+
+
+test:hashtags:
+    stage: test
+    dependencies:
+        - build:hashtags
+    image: python:3.8-slim
+    script:
+        - echo "Testing hashtags..."
+        - cd services/hashtags
+        - pip install -r requirements.txt
+        - pip install pytest
+        - pytest test_extract_hashtags.py
+
+
+test:mentions:
+    stage: test
+    dependencies:
+        - build:mentions
+    image: python:3.8-slim
+    script:
+        - echo "Testing mentions..."
+        - cd services/mentions
+        - pip install -r requirements.txt
+        - pip install pytest
+        - pytest test_extract_mentions.py
+
+
+test:geolocation:
+    stage: test
+    dependencies:
+        - build:geolocation
+    image: python:3.8-slim
+    script:
+        - echo "Testing geolocation..."
+        - cd services/geolocation
+        - pip install -r requirements.txt
+        - pip install pytest
+        - pytest test_extract_geolocation.py
+
+
+test:keywords:
+    stage: test
+    dependencies:
+        - build:keywords
+    image: python:3.8-slim
+    script:
+        - echo "Testing keywords..."
+        - cd services/keywords
+        - pip install -r requirements.txt
+        - pip install pytest
+        - pytest test_extract_keywords.py
+
+
+test:filter-merge:
+    stage: test
+    dependencies:
+        - build:filter-merge
+    image: python:3.8-slim
+    script:
+        - echo "Testing filter-merge..."
+        - cd services/filter-merge
+        - pip install -r requirements.txt
+        - pip install pytest
+        - cp sfm-coronavirus-sample-geo.json sfm-coronavirus-sample-geo-copy.json
+        - pytest test_filter_merge.py
+
+
+# test:els-index:
+#     stage: test
+#     dependencies:
+#         - build:els-index
+#     image: python:3.8-slim
+#     script:
+#         - echo "Testing els-index..."
+#         - cd services/els-index
+#         - pip install -r requirements.txt
+#         - pip install pytest
+#         - pytest test_index.py
